@@ -10,7 +10,7 @@ This script automates the video encoding process using FFmpeg to create multiple
 ## Installation
 
 ```bash
-npm install
+pnpm install
 
 Build & Publish to NPM
 Follow these steps to create a build and publish it to NPM:
