@@ -1,5 +1,11 @@
 # midgar-video
 
+## 2.1.3
+
+### Patch Changes
+
+- 141ac2c: updated version
+
 ## 2.1.2
 
 ### Patch Changes
