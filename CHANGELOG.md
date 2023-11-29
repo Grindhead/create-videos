@@ -1,5 +1,11 @@
 # midgar-video
 
+## 2.1.4
+
+### Patch Changes
+
+- 1f9e053: fixed error with corrupt output
+
 ## 2.1.3
 
 ### Patch Changes
