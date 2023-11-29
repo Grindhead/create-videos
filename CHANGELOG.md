@@ -1,5 +1,11 @@
 # midgar-video
 
+## 2.1.2
+
+### Patch Changes
+
+- 3956832: changed package name to create-videos
+
 ## 2.2.0
 
 ### Minor Changes
