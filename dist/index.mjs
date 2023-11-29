@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -27,9 +26,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 
 // node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/index.js
 var require_balanced_match = __commonJS({
-  "node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/index.js"(exports, module2) {
+  "node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/index.js"(exports, module) {
     "use strict";
-    module2.exports = balanced;
+    module.exports = balanced;
     function balanced(a, b, str) {
       if (a instanceof RegExp)
         a = maybeMatch(a, str);
@@ -87,10 +86,10 @@ var require_balanced_match = __commonJS({
 
 // node_modules/.pnpm/brace-expansion@2.0.1/node_modules/brace-expansion/index.js
 var require_brace_expansion = __commonJS({
-  "node_modules/.pnpm/brace-expansion@2.0.1/node_modules/brace-expansion/index.js"(exports, module2) {
+  "node_modules/.pnpm/brace-expansion@2.0.1/node_modules/brace-expansion/index.js"(exports, module) {
     "use strict";
     var balanced = require_balanced_match();
-    module2.exports = expandTop;
+    module.exports = expandTop;
     var escSlash = "\0SLASH" + Math.random() + "\0";
     var escOpen = "\0OPEN" + Math.random() + "\0";
     var escClose = "\0CLOSE" + Math.random() + "\0";
@@ -238,8 +237,8 @@ var require_brace_expansion = __commonJS({
 });
 
 // src/index.ts
-var fs2 = __toESM(require("fs"));
-var path2 = __toESM(require("path"));
+import * as fs2 from "fs";
+import * as path2 from "path";
 
 // node_modules/.pnpm/chalk@5.3.0/node_modules/chalk/source/vendor/ansi-styles/index.js
 var ANSI_BACKGROUND_OFFSET = 10;
@@ -428,16 +427,16 @@ var ansiStyles = assembleStyles();
 var ansi_styles_default = ansiStyles;
 
 // node_modules/.pnpm/chalk@5.3.0/node_modules/chalk/source/vendor/supports-color/index.js
-var import_node_process = __toESM(require("process"), 1);
-var import_node_os = __toESM(require("os"), 1);
-var import_node_tty = __toESM(require("tty"), 1);
-function hasFlag(flag, argv = globalThis.Deno ? globalThis.Deno.args : import_node_process.default.argv) {
+import process2 from "process";
+import os from "os";
+import tty from "tty";
+function hasFlag(flag, argv = globalThis.Deno ? globalThis.Deno.args : process2.argv) {
   const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
   const position = argv.indexOf(prefix + flag);
   const terminatorPosition = argv.indexOf("--");
   return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
 }
-var { env } = import_node_process.default;
+var { env } = process2;
 var flagForceColor;
 if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) {
   flagForceColor = 0;
@@ -493,8 +492,8 @@ function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
   if (env.TERM === "dumb") {
     return min;
   }
-  if (import_node_process.default.platform === "win32") {
-    const osRelease = import_node_os.default.release().split(".");
+  if (process2.platform === "win32") {
+    const osRelease = os.release().split(".");
     if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
       return Number(osRelease[2]) >= 14931 ? 3 : 2;
     }
@@ -548,8 +547,8 @@ function createSupportsColor(stream2, options = {}) {
   return translateLevel(level);
 }
 var supportsColor = {
-  stdout: createSupportsColor({ isTTY: import_node_tty.default.isatty(1) }),
-  stderr: createSupportsColor({ isTTY: import_node_tty.default.isatty(2) })
+  stdout: createSupportsColor({ isTTY: tty.isatty(1) }),
+  stderr: createSupportsColor({ isTTY: tty.isatty(2) })
 };
 var supports_color_default = supportsColor;
 
@@ -3326,24 +3325,24 @@ var LRUCache = class _LRUCache {
 };
 
 // node_modules/.pnpm/path-scurry@1.10.1/node_modules/path-scurry/dist/mjs/index.js
-var import_path = require("path");
-var import_url = require("url");
-var actualFS = __toESM(require("fs"), 1);
-var import_fs = require("fs");
-var import_promises = require("fs/promises");
+import { posix, win32 } from "path";
+import { fileURLToPath } from "url";
+import * as actualFS from "fs";
+import { lstatSync, readdir as readdirCB, readdirSync, readlinkSync, realpathSync as rps } from "fs";
+import { lstat, readdir, readlink, realpath } from "fs/promises";
 
 // node_modules/.pnpm/minipass@7.0.4/node_modules/minipass/dist/esm/index.js
-var import_events = require("events");
-var import_stream = __toESM(require("stream"), 1);
-var import_string_decoder = require("string_decoder");
+import { EventEmitter } from "events";
+import Stream from "stream";
+import { StringDecoder } from "string_decoder";
 var proc = typeof process === "object" && process ? process : {
   stdout: null,
   stderr: null
 };
-var isStream = (s) => !!s && typeof s === "object" && (s instanceof Minipass || s instanceof import_stream.default || isReadable(s) || isWritable(s));
-var isReadable = (s) => !!s && typeof s === "object" && s instanceof import_events.EventEmitter && typeof s.pipe === "function" && // node core Writable streams have a pipe() method, but it throws
-s.pipe !== import_stream.default.Writable.prototype.pipe;
-var isWritable = (s) => !!s && typeof s === "object" && s instanceof import_events.EventEmitter && typeof s.write === "function" && typeof s.end === "function";
+var isStream = (s) => !!s && typeof s === "object" && (s instanceof Minipass || s instanceof Stream || isReadable(s) || isWritable(s));
+var isReadable = (s) => !!s && typeof s === "object" && s instanceof EventEmitter && typeof s.pipe === "function" && // node core Writable streams have a pipe() method, but it throws
+s.pipe !== Stream.Writable.prototype.pipe;
+var isWritable = (s) => !!s && typeof s === "object" && s instanceof EventEmitter && typeof s.write === "function" && typeof s.end === "function";
 var EOF = Symbol("EOF");
 var MAYBE_EMIT_END = Symbol("maybeEmitEnd");
 var EMITTED_END = Symbol("emittedEnd");
@@ -3419,7 +3418,7 @@ var PipeProxyErrors = class extends Pipe {
 };
 var isObjectModeOptions = (o) => !!o.objectMode;
 var isEncodingOptions = (o) => !o.objectMode && !!o.encoding && o.encoding !== "buffer";
-var Minipass = class extends import_events.EventEmitter {
+var Minipass = class extends EventEmitter {
   [FLOWING] = false;
   [PAUSED] = false;
   [PIPES] = [];
@@ -3470,7 +3469,7 @@ var Minipass = class extends import_events.EventEmitter {
       this[ENCODING] = null;
     }
     this[ASYNC] = !!options.async;
-    this[DECODER] = this[ENCODING] ? new import_string_decoder.StringDecoder(this[ENCODING]) : null;
+    this[DECODER] = this[ENCODING] ? new StringDecoder(this[ENCODING]) : null;
     if (options && options.debugExposeBuffer === true) {
       Object.defineProperty(this, "buffer", { get: () => this[BUFFER] });
     }
@@ -4211,18 +4210,18 @@ var Minipass = class extends import_events.EventEmitter {
 };
 
 // node_modules/.pnpm/path-scurry@1.10.1/node_modules/path-scurry/dist/mjs/index.js
-var realpathSync = import_fs.realpathSync.native;
+var realpathSync = rps.native;
 var defaultFS = {
-  lstatSync: import_fs.lstatSync,
-  readdir: import_fs.readdir,
-  readdirSync: import_fs.readdirSync,
-  readlinkSync: import_fs.readlinkSync,
+  lstatSync,
+  readdir: readdirCB,
+  readdirSync,
+  readlinkSync,
   realpathSync,
   promises: {
-    lstat: import_promises.lstat,
-    readdir: import_promises.readdir,
-    readlink: import_promises.readlink,
-    realpath: import_promises.realpath
+    lstat,
+    readdir,
+    readlink,
+    realpath
   }
 };
 var fsFromOption = (fsOption) => !fsOption || fsOption === defaultFS || fsOption === actualFS ? defaultFS : {
@@ -5212,7 +5211,7 @@ var PathWin32 = class _PathWin32 extends PathBase {
    * @internal
    */
   getRootString(path3) {
-    return import_path.win32.parse(path3).root;
+    return win32.parse(path3).root;
   }
   /**
    * @internal
@@ -5311,7 +5310,7 @@ var PathScurryBase = class {
   constructor(cwd = process.cwd(), pathImpl, sep2, { nocase, childrenCacheSize = 16 * 1024, fs: fs3 = defaultFS } = {}) {
     this.#fs = fsFromOption(fs3);
     if (cwd instanceof URL || cwd.startsWith("file://")) {
-      cwd = (0, import_url.fileURLToPath)(cwd);
+      cwd = fileURLToPath(cwd);
     }
     const cwdPath = pathImpl.resolve(cwd);
     this.roots = /* @__PURE__ */ Object.create(null);
@@ -5852,7 +5851,7 @@ var PathScurryWin32 = class extends PathScurryBase {
   sep = "\\";
   constructor(cwd = process.cwd(), opts = {}) {
     const { nocase = true } = opts;
-    super(cwd, import_path.win32, "\\", { ...opts, nocase });
+    super(cwd, win32, "\\", { ...opts, nocase });
     this.nocase = nocase;
     for (let p = this.cwd; p; p = p.parent) {
       p.nocase = this.nocase;
@@ -5862,7 +5861,7 @@ var PathScurryWin32 = class extends PathScurryBase {
    * @internal
    */
   parseRootPath(dir) {
-    return import_path.win32.parse(dir).root.toUpperCase();
+    return win32.parse(dir).root.toUpperCase();
   }
   /**
    * @internal
@@ -5884,7 +5883,7 @@ var PathScurryPosix = class extends PathScurryBase {
   sep = "/";
   constructor(cwd = process.cwd(), opts = {}) {
     const { nocase = false } = opts;
-    super(cwd, import_path.posix, "/", { ...opts, nocase });
+    super(cwd, posix, "/", { ...opts, nocase });
     this.nocase = nocase;
   }
   /**
@@ -5916,7 +5915,7 @@ var Path = process.platform === "win32" ? PathWin32 : PathPosix;
 var PathScurry = process.platform === "win32" ? PathScurryWin32 : process.platform === "darwin" ? PathScurryDarwin : PathScurryPosix;
 
 // node_modules/.pnpm/glob@10.3.10/node_modules/glob/dist/esm/glob.js
-var import_url2 = require("url");
+import { fileURLToPath as fileURLToPath2 } from "url";
 
 // node_modules/.pnpm/glob@10.3.10/node_modules/glob/dist/esm/pattern.js
 var isPatternList = (pl) => pl.length >= 1;
@@ -6746,7 +6745,7 @@ var Glob = class {
     if (!opts.cwd) {
       this.cwd = "";
     } else if (opts.cwd instanceof URL || opts.cwd.startsWith("file://")) {
-      opts.cwd = (0, import_url2.fileURLToPath)(opts.cwd);
+      opts.cwd = fileURLToPath2(opts.cwd);
     }
     this.cwd = opts.cwd || "";
     this.root = opts.root;
@@ -6973,8 +6972,8 @@ var optArg = (opt = {}) => optArgT(opt);
 var optArgSync = (opt = {}) => optArgT(opt);
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/path-arg.js
-var import_path2 = require("path");
-var import_util = require("util");
+import { parse, resolve } from "path";
+import { inspect } from "util";
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/platform.js
 var platform_default = process.env.__TESTING_RIMRAF_PLATFORM__ || process.platform;
@@ -6984,7 +6983,7 @@ var pathArg = (path3, opt = {}) => {
   const type = typeof path3;
   if (type !== "string") {
     const ctor = path3 && type === "object" && path3.constructor;
-    const received = ctor && ctor.name ? `an instance of ${ctor.name}` : type === "object" ? (0, import_util.inspect)(path3) : `type ${type} ${path3}`;
+    const received = ctor && ctor.name ? `an instance of ${ctor.name}` : type === "object" ? inspect(path3) : `type ${type} ${path3}`;
     const msg = `The "path" argument must be of type string. Received ${received}`;
     throw Object.assign(new TypeError(msg), {
       path: path3,
@@ -6998,8 +6997,8 @@ var pathArg = (path3, opt = {}) => {
       code: "ERR_INVALID_ARG_VALUE"
     });
   }
-  path3 = (0, import_path2.resolve)(path3);
-  const { root } = (0, import_path2.parse)(path3);
+  path3 = resolve(path3);
+  const { root } = parse(path3);
   if (path3 === root && opt.preserveRoot !== false) {
     const msg = "refusing to remove root directory without preserveRoot:false";
     throw Object.assign(new Error(msg), {
@@ -7009,7 +7008,7 @@ var pathArg = (path3, opt = {}) => {
   }
   if (platform_default === "win32") {
     const badWinChars = /[*|"<>?:]/;
-    const { root: root2 } = (0, import_path2.parse)(path3);
+    const { root: root2 } = parse(path3);
     if (badWinChars.test(path3.substring(root2.length))) {
       throw Object.assign(new Error("Illegal characters in path."), {
         path: path3,
@@ -7022,19 +7021,19 @@ var pathArg = (path3, opt = {}) => {
 var path_arg_default = pathArg;
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/fs.js
-var import_fs2 = __toESM(require("fs"), 1);
-var import_fs3 = require("fs");
-var import_fs4 = require("fs");
-var readdirSync2 = (path3) => (0, import_fs4.readdirSync)(path3, { withFileTypes: true });
-var chmod = (path3, mode) => new Promise((res, rej) => import_fs2.default.chmod(path3, mode, (er, ...d) => er ? rej(er) : res(...d)));
-var mkdir = (path3, options) => new Promise((res, rej) => import_fs2.default.mkdir(path3, options, (er, made) => er ? rej(er) : res(made)));
-var readdir2 = (path3) => new Promise((res, rej) => import_fs2.default.readdir(path3, { withFileTypes: true }, (er, data) => er ? rej(er) : res(data)));
-var rename = (oldPath, newPath) => new Promise((res, rej) => import_fs2.default.rename(oldPath, newPath, (er, ...d) => er ? rej(er) : res(...d)));
-var rm = (path3, options) => new Promise((res, rej) => import_fs2.default.rm(path3, options, (er, ...d) => er ? rej(er) : res(...d)));
-var rmdir = (path3) => new Promise((res, rej) => import_fs2.default.rmdir(path3, (er, ...d) => er ? rej(er) : res(...d)));
-var stat = (path3) => new Promise((res, rej) => import_fs2.default.stat(path3, (er, data) => er ? rej(er) : res(data)));
-var lstat2 = (path3) => new Promise((res, rej) => import_fs2.default.lstat(path3, (er, data) => er ? rej(er) : res(data)));
-var unlink = (path3) => new Promise((res, rej) => import_fs2.default.unlink(path3, (er, ...d) => er ? rej(er) : res(...d)));
+import fs from "fs";
+import { chmodSync, mkdirSync, renameSync, rmdirSync, rmSync, statSync, lstatSync as lstatSync2, unlinkSync } from "fs";
+import { readdirSync as rdSync } from "fs";
+var readdirSync2 = (path3) => rdSync(path3, { withFileTypes: true });
+var chmod = (path3, mode) => new Promise((res, rej) => fs.chmod(path3, mode, (er, ...d) => er ? rej(er) : res(...d)));
+var mkdir = (path3, options) => new Promise((res, rej) => fs.mkdir(path3, options, (er, made) => er ? rej(er) : res(made)));
+var readdir2 = (path3) => new Promise((res, rej) => fs.readdir(path3, { withFileTypes: true }, (er, data) => er ? rej(er) : res(data)));
+var rename = (oldPath, newPath) => new Promise((res, rej) => fs.rename(oldPath, newPath, (er, ...d) => er ? rej(er) : res(...d)));
+var rm = (path3, options) => new Promise((res, rej) => fs.rm(path3, options, (er, ...d) => er ? rej(er) : res(...d)));
+var rmdir = (path3) => new Promise((res, rej) => fs.rmdir(path3, (er, ...d) => er ? rej(er) : res(...d)));
+var stat = (path3) => new Promise((res, rej) => fs.stat(path3, (er, data) => er ? rej(er) : res(data)));
+var lstat2 = (path3) => new Promise((res, rej) => fs.lstat(path3, (er, data) => er ? rej(er) : res(data)));
+var unlink = (path3) => new Promise((res, rej) => fs.unlink(path3, (er, ...d) => er ? rej(er) : res(...d)));
 var promises = {
   chmod,
   mkdir,
@@ -7048,7 +7047,7 @@ var promises = {
 };
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/rimraf-posix.js
-var import_path3 = require("path");
+import { parse as parse2, resolve as resolve2 } from "path";
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/readdir-or-error.js
 var { readdir: readdir3 } = promises;
@@ -7096,7 +7095,7 @@ var rimrafPosixSync = (path3, opt) => {
     throw opt.signal.reason;
   }
   try {
-    return rimrafPosixDirSync(path3, opt, (0, import_fs3.lstatSync)(path3));
+    return rimrafPosixDirSync(path3, opt, lstatSync2(path3));
   } catch (er) {
     if (er?.code === "ENOENT")
       return true;
@@ -7123,11 +7122,11 @@ var rimrafPosixDir = async (path3, opt, ent) => {
     await ignoreENOENT(unlink2(path3));
     return true;
   }
-  const removedAll = (await Promise.all(entries.map((ent2) => rimrafPosixDir((0, import_path3.resolve)(path3, ent2.name), opt, ent2)))).reduce((a, b) => a && b, true);
+  const removedAll = (await Promise.all(entries.map((ent2) => rimrafPosixDir(resolve2(path3, ent2.name), opt, ent2)))).reduce((a, b) => a && b, true);
   if (!removedAll) {
     return false;
   }
-  if (opt.preserveRoot === false && path3 === (0, import_path3.parse)(path3).root) {
+  if (opt.preserveRoot === false && path3 === parse2(path3).root) {
     return false;
   }
   if (opt.filter && !await opt.filter(path3, ent)) {
@@ -7153,15 +7152,15 @@ var rimrafPosixDirSync = (path3, opt, ent) => {
     if (opt.filter && !opt.filter(path3, ent)) {
       return false;
     }
-    ignoreENOENTSync(() => (0, import_fs3.unlinkSync)(path3));
+    ignoreENOENTSync(() => unlinkSync(path3));
     return true;
   }
   let removedAll = true;
   for (const ent2 of entries) {
-    const p = (0, import_path3.resolve)(path3, ent2.name);
+    const p = resolve2(path3, ent2.name);
     removedAll = rimrafPosixDirSync(p, opt, ent2) && removedAll;
   }
-  if (opt.preserveRoot === false && path3 === (0, import_path3.parse)(path3).root) {
+  if (opt.preserveRoot === false && path3 === parse2(path3).root) {
     return false;
   }
   if (!removedAll) {
@@ -7170,12 +7169,12 @@ var rimrafPosixDirSync = (path3, opt, ent) => {
   if (opt.filter && !opt.filter(path3, ent)) {
     return false;
   }
-  ignoreENOENTSync(() => (0, import_fs3.rmdirSync)(path3));
+  ignoreENOENTSync(() => rmdirSync(path3));
   return true;
 };
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/rimraf-windows.js
-var import_path6 = require("path");
+import { parse as parse5, resolve as resolve5 } from "path";
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/fix-eperm.js
 var { chmod: chmod2 } = promises;
@@ -7212,7 +7211,7 @@ var fixEPERMSync = (fn) => (path3) => {
     }
     if (fer?.code === "EPERM") {
       try {
-        (0, import_fs3.chmodSync)(path3, 438);
+        chmodSync(path3, 438);
       } catch (er2) {
         const fer2 = er2;
         if (fer2?.code === "ENOENT") {
@@ -7284,54 +7283,54 @@ var retryBusySync = (fn) => {
 };
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/rimraf-move-remove.js
-var import_path5 = require("path");
+import { basename, parse as parse4, resolve as resolve4 } from "path";
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/default-tmp.js
-var import_os = require("os");
-var import_path4 = require("path");
+import { tmpdir } from "os";
+import { parse as parse3, resolve as resolve3 } from "path";
 var { stat: stat2 } = promises;
 var isDirSync = (path3) => {
   try {
-    return (0, import_fs3.statSync)(path3).isDirectory();
+    return statSync(path3).isDirectory();
   } catch (er) {
     return false;
   }
 };
 var isDir = (path3) => stat2(path3).then((st) => st.isDirectory(), () => false);
 var win32DefaultTmp = async (path3) => {
-  const { root } = (0, import_path4.parse)(path3);
-  const tmp = (0, import_os.tmpdir)();
-  const { root: tmpRoot } = (0, import_path4.parse)(tmp);
+  const { root } = parse3(path3);
+  const tmp = tmpdir();
+  const { root: tmpRoot } = parse3(tmp);
   if (root.toLowerCase() === tmpRoot.toLowerCase()) {
     return tmp;
   }
-  const driveTmp = (0, import_path4.resolve)(root, "/temp");
+  const driveTmp = resolve3(root, "/temp");
   if (await isDir(driveTmp)) {
     return driveTmp;
   }
   return root;
 };
 var win32DefaultTmpSync = (path3) => {
-  const { root } = (0, import_path4.parse)(path3);
-  const tmp = (0, import_os.tmpdir)();
-  const { root: tmpRoot } = (0, import_path4.parse)(tmp);
+  const { root } = parse3(path3);
+  const tmp = tmpdir();
+  const { root: tmpRoot } = parse3(tmp);
   if (root.toLowerCase() === tmpRoot.toLowerCase()) {
     return tmp;
   }
-  const driveTmp = (0, import_path4.resolve)(root, "/temp");
+  const driveTmp = resolve3(root, "/temp");
   if (isDirSync(driveTmp)) {
     return driveTmp;
   }
   return root;
 };
-var posixDefaultTmp = async () => (0, import_os.tmpdir)();
-var posixDefaultTmpSync = () => (0, import_os.tmpdir)();
+var posixDefaultTmp = async () => tmpdir();
+var posixDefaultTmpSync = () => tmpdir();
 var defaultTmp = platform_default === "win32" ? win32DefaultTmp : posixDefaultTmp;
 var defaultTmpSync = platform_default === "win32" ? win32DefaultTmpSync : posixDefaultTmpSync;
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/rimraf-move-remove.js
 var { lstat: lstat4, rename: rename2, unlink: unlink3, rmdir: rmdir3, chmod: chmod3 } = promises;
-var uniqueFilename = (path3) => `.${(0, import_path5.basename)(path3)}.${Math.random()}`;
+var uniqueFilename = (path3) => `.${basename(path3)}.${Math.random()}`;
 var unlinkFixEPERM = async (path3) => unlink3(path3).catch((er) => {
   if (er.code === "EPERM") {
     return chmod3(path3, 438).then(() => unlink3(path3), (er2) => {
@@ -7347,11 +7346,11 @@ var unlinkFixEPERM = async (path3) => unlink3(path3).catch((er) => {
 });
 var unlinkFixEPERMSync = (path3) => {
   try {
-    (0, import_fs3.unlinkSync)(path3);
+    unlinkSync(path3);
   } catch (er) {
     if (er?.code === "EPERM") {
       try {
-        return (0, import_fs3.chmodSync)(path3, 438);
+        return chmodSync(path3, 438);
       } catch (er2) {
         if (er2?.code === "ENOENT") {
           return;
@@ -7383,7 +7382,7 @@ var rimrafMoveRemoveDir = async (path3, opt, ent) => {
   if (!opt.tmp) {
     return rimrafMoveRemoveDir(path3, { ...opt, tmp: await defaultTmp(path3) }, ent);
   }
-  if (path3 === opt.tmp && (0, import_path5.parse)(path3).root !== path3) {
+  if (path3 === opt.tmp && parse4(path3).root !== path3) {
     throw new Error("cannot delete temp directory used for deletion");
   }
   const entries = ent.isDirectory() ? await readdirOrError(path3) : null;
@@ -7402,11 +7401,11 @@ var rimrafMoveRemoveDir = async (path3, opt, ent) => {
     await ignoreENOENT(tmpUnlink(path3, opt.tmp, unlinkFixEPERM));
     return true;
   }
-  const removedAll = (await Promise.all(entries.map((ent2) => rimrafMoveRemoveDir((0, import_path5.resolve)(path3, ent2.name), opt, ent2)))).reduce((a, b) => a && b, true);
+  const removedAll = (await Promise.all(entries.map((ent2) => rimrafMoveRemoveDir(resolve4(path3, ent2.name), opt, ent2)))).reduce((a, b) => a && b, true);
   if (!removedAll) {
     return false;
   }
-  if (opt.preserveRoot === false && path3 === (0, import_path5.parse)(path3).root) {
+  if (opt.preserveRoot === false && path3 === parse4(path3).root) {
     return false;
   }
   if (opt.filter && !await opt.filter(path3, ent)) {
@@ -7416,7 +7415,7 @@ var rimrafMoveRemoveDir = async (path3, opt, ent) => {
   return true;
 };
 var tmpUnlink = async (path3, tmp, rm3) => {
-  const tmpFile = (0, import_path5.resolve)(tmp, uniqueFilename(path3));
+  const tmpFile = resolve4(tmp, uniqueFilename(path3));
   await rename2(path3, tmpFile);
   return await rm3(tmpFile);
 };
@@ -7425,7 +7424,7 @@ var rimrafMoveRemoveSync = (path3, opt) => {
     throw opt.signal.reason;
   }
   try {
-    return rimrafMoveRemoveDirSync(path3, opt, (0, import_fs3.lstatSync)(path3));
+    return rimrafMoveRemoveDirSync(path3, opt, lstatSync2(path3));
   } catch (er) {
     if (er?.code === "ENOENT")
       return true;
@@ -7440,7 +7439,7 @@ var rimrafMoveRemoveDirSync = (path3, opt, ent) => {
     return rimrafMoveRemoveDirSync(path3, { ...opt, tmp: defaultTmpSync(path3) }, ent);
   }
   const tmp = opt.tmp;
-  if (path3 === opt.tmp && (0, import_path5.parse)(path3).root !== path3) {
+  if (path3 === opt.tmp && parse4(path3).root !== path3) {
     throw new Error("cannot delete temp directory used for deletion");
   }
   const entries = ent.isDirectory() ? readdirOrErrorSync(path3) : null;
@@ -7461,33 +7460,33 @@ var rimrafMoveRemoveDirSync = (path3, opt, ent) => {
   }
   let removedAll = true;
   for (const ent2 of entries) {
-    const p = (0, import_path5.resolve)(path3, ent2.name);
+    const p = resolve4(path3, ent2.name);
     removedAll = rimrafMoveRemoveDirSync(p, opt, ent2) && removedAll;
   }
   if (!removedAll) {
     return false;
   }
-  if (opt.preserveRoot === false && path3 === (0, import_path5.parse)(path3).root) {
+  if (opt.preserveRoot === false && path3 === parse4(path3).root) {
     return false;
   }
   if (opt.filter && !opt.filter(path3, ent)) {
     return false;
   }
-  ignoreENOENTSync(() => tmpUnlinkSync(path3, tmp, import_fs3.rmdirSync));
+  ignoreENOENTSync(() => tmpUnlinkSync(path3, tmp, rmdirSync));
   return true;
 };
 var tmpUnlinkSync = (path3, tmp, rmSync2) => {
-  const tmpFile = (0, import_path5.resolve)(tmp, uniqueFilename(path3));
-  (0, import_fs3.renameSync)(path3, tmpFile);
+  const tmpFile = resolve4(tmp, uniqueFilename(path3));
+  renameSync(path3, tmpFile);
   return rmSync2(tmpFile);
 };
 
 // node_modules/.pnpm/rimraf@5.0.5/node_modules/rimraf/dist/esm/rimraf-windows.js
 var { unlink: unlink4, rmdir: rmdir4, lstat: lstat5 } = promises;
 var rimrafWindowsFile = retryBusy(fixEPERM(unlink4));
-var rimrafWindowsFileSync = retryBusySync(fixEPERMSync(import_fs3.unlinkSync));
+var rimrafWindowsFileSync = retryBusySync(fixEPERMSync(unlinkSync));
 var rimrafWindowsDirRetry = retryBusy(fixEPERM(rmdir4));
-var rimrafWindowsDirRetrySync = retryBusySync(fixEPERMSync(import_fs3.rmdirSync));
+var rimrafWindowsDirRetrySync = retryBusySync(fixEPERMSync(rmdirSync));
 var rimrafWindowsDirMoveRemoveFallback = async (path3, opt) => {
   if (opt?.signal?.aborted) {
     throw opt.signal.reason;
@@ -7537,7 +7536,7 @@ var rimrafWindowsSync = (path3, opt) => {
     throw opt.signal.reason;
   }
   try {
-    return rimrafWindowsDirSync(path3, opt, (0, import_fs3.lstatSync)(path3), START);
+    return rimrafWindowsDirSync(path3, opt, lstatSync2(path3), START);
   } catch (er) {
     if (er?.code === "ENOENT")
       return true;
@@ -7565,11 +7564,11 @@ var rimrafWindowsDir = async (path3, opt, ent, state = START) => {
     return true;
   }
   const s = state === START ? CHILD : state;
-  const removedAll = (await Promise.all(entries.map((ent2) => rimrafWindowsDir((0, import_path6.resolve)(path3, ent2.name), opt, ent2, s)))).reduce((a, b) => a && b, true);
+  const removedAll = (await Promise.all(entries.map((ent2) => rimrafWindowsDir(resolve5(path3, ent2.name), opt, ent2, s)))).reduce((a, b) => a && b, true);
   if (state === START) {
     return rimrafWindowsDir(path3, opt, ent, FINISH);
   } else if (state === FINISH) {
-    if (opt.preserveRoot === false && path3 === (0, import_path6.parse)(path3).root) {
+    if (opt.preserveRoot === false && path3 === parse5(path3).root) {
       return false;
     }
     if (!removedAll) {
@@ -7602,13 +7601,13 @@ var rimrafWindowsDirSync = (path3, opt, ent, state = START) => {
   let removedAll = true;
   for (const ent2 of entries) {
     const s = state === START ? CHILD : state;
-    const p = (0, import_path6.resolve)(path3, ent2.name);
+    const p = resolve5(path3, ent2.name);
     removedAll = rimrafWindowsDirSync(p, opt, ent2, s) && removedAll;
   }
   if (state === START) {
     return rimrafWindowsDirSync(path3, opt, ent, FINISH);
   } else if (state === FINISH) {
-    if (opt.preserveRoot === false && path3 === (0, import_path6.parse)(path3).root) {
+    if (opt.preserveRoot === false && path3 === parse5(path3).root) {
       return false;
     }
     if (!removedAll) {
@@ -7639,7 +7638,7 @@ var rimrafNative = async (path3, opt) => {
   return true;
 };
 var rimrafNativeSync = (path3, opt) => {
-  (0, import_fs3.rmSync)(path3, {
+  rmSync(path3, {
     ...opt,
     force: true,
     recursive: true
@@ -7711,7 +7710,7 @@ var rimraf = Object.assign(rimraf_, {
 rimraf.rimraf = rimraf;
 
 // src/index.ts
-var import_child_process = require("child_process");
+import { exec } from "child_process";
 var inputDirectory = "./src/Resources/Videos";
 var outputDirectory = "./dist/videos";
 var ffmpegPath = "ffmpeg";
@@ -7755,7 +7754,7 @@ var encodeVideoWithProgress = async (inputFilePath, outputFilePath, options) => 
     outputFilePath.replace(/\\/g, "/")
   ].join(" ");
   return new Promise((resolve6, reject) => {
-    (0, import_child_process.exec)(command, (error, stdout, stderr) => {
+    exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error(`FFmpeg Error: ${error.message}`);
         console.error(`FFmpeg Output: ${stderr}`);

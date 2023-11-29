@@ -1,6 +1,6 @@
 # Video Processing Script
 
-This script automates the video encoding process using FFmpeg to create multiple versions of input videos. It includes configurations for H.264 desktop, H.264 mobile, and VP9 (WebM) formats.
+This script automates the video encoding process using FFmpeg to create multiple versions of input videos. It includes configurations for H.264, and VP9 (WebM) formats for desktop (16:9) and mobile (4:3).
 
 ## Requirements
 
@@ -27,16 +27,16 @@ Step 3: Automated Deployment
 Once the PR is approved, GitHub will create a new release PR. Once the release PR is approved, GitHub will automatically deploy to NPM.
 
 Available Commands
-pnpm build:
+pnpm run build:
 Generates a production build in the dist directory.
 
 pnpm run update:
 Updates the project using semver and generates a change documentation file. Do this before pushing changes to git. It automatically updates the version number.
 
-pnpm docs:
+pnpm run docs:
 Generates documentation in dist/docs.
 
-pnpm lint:
+pnpm run lint:
 Runs ESLint over the codebase.
 
 pnpm ci:

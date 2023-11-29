@@ -184,6 +184,15 @@ const encodeAllVersions = async (videoFile: string): Promise<void> => {
     )
   );
 
+  // Create MP4 version for mobile - 4:3 aspect ratio (same as h264 mobile)
+  tasks.push(
+    encodeVideoWithProgress(
+      inputFilePath,
+      `${baseOutputFileName}-mp4-mobile.mp4`,
+      h264OptionsMobile
+    )
+  );
+
   try {
     await Promise.all(tasks);
     logMessage(`All versions created for ${videoFile}`, chalk.green);
