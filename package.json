@@ -1,5 +1,5 @@
 {
-  "name": "midgar-video",
+  "name": "create-videos",
   "version": "2.1.1",
   "description": "Video processing script",
   "license": "MIT",
@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Grindhead/create-videos"
+    "url": "git+https://github.com/Grindhead/create-videos.git"
   },
   "keywords": [
     "video",
