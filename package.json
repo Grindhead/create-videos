@@ -1,8 +1,16 @@
 {
   "name": "midgar-video",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Video processing script",
-  "main": "src/index.js",
+  "license": "MIT",
+  "private": false,
+  "author": {
+    "name": "Craig Beswetherick",
+    "email": "craigbeswetherick@gmail.com"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
     "process-videos": "node src/index.js",
     "lint": "eslint -f unix \"src/**/*.{ts,tsx}\" && tsc",
