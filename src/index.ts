@@ -52,22 +52,6 @@ const h264Options: string[] = [
 ];
 
 /**
- * FFmpeg options for H.264 codec (Desktop version).
- *
- * @remarks
- * Default value: h264Options.
- */
-const h264OptionsDesktop: string[] = [...h264Options];
-
-/**
- * FFmpeg options for H.264 codec (Mobile version with 4:3 aspect ratio).
- *
- * @remarks
- * Default value: [...h264Options, '-vf', 'scale=1920:1440'].
- */
-const h264OptionsMobile: string[] = [...h264Options, '-vf', 'scale=1920:1440'];
-
-/**
  * FFmpeg options for VP9 codec (WebM format).
  *
  * @remarks
@@ -108,6 +92,50 @@ const createDir = (dir: string): void => {
 };
 
 /**
+ * Encode H.264 (MP4) and VP9 (WebM) versions of a given video file.
+ *
+ * @param videoFile - The name of the video file.
+ * @returns A Promise that resolves when both versions are encoded.
+ */
+const encodeVersions = async (videoFile: string): Promise<void> => {
+  const inputFilePath = path.join(inputDirectory, videoFile);
+  const baseOutputFileName = path.join(
+    outputDirectory,
+    videoFile.replace(/\.[^.]+$/, '')
+  );
+
+  const h264OptionsDesktop = [...h264Options];
+  const vp9OptionsDesktop = [...vp9Options];
+
+  const tasks: Promise<void>[] = [];
+
+  // Create H.264 version (MP4) - 16:9 aspect ratio for both mobile and desktop
+  tasks.push(
+    encodeVideoWithProgress(
+      inputFilePath,
+      `${baseOutputFileName}-h264.mp4`,
+      h264OptionsDesktop
+    )
+  );
+
+  // Create VP9 version (WebM) - 16:9 aspect ratio for both mobile and desktop
+  tasks.push(
+    encodeVideoWithProgress(
+      inputFilePath,
+      `${baseOutputFileName}-vp9.webm`,
+      vp9OptionsDesktop
+    )
+  );
+
+  try {
+    await Promise.all(tasks);
+    logMessage(`Versions created for ${videoFile}`, chalk.green);
+  } catch (error) {
+    logMessage(`Error creating versions for ${videoFile}: ${error}`, chalk.red);
+  }
+};
+
+/**
  * Encode a video with FFmpeg and track progress using a Promise.
  *
  * @param inputFilePath - The path to the input video file.
@@ -143,66 +171,7 @@ const encodeVideoWithProgress = async (
 };
 
 /**
- * Encode all versions (H.264 desktop, H.264 mobile, VP9) of a given video file.
- *
- * @param videoFile - The name of the video file.
- * @returns A Promise that resolves when all versions are encoded.
- */
-const encodeAllVersions = async (videoFile: string): Promise<void> => {
-  const inputFilePath = path.join(inputDirectory, videoFile);
-  const baseOutputFileName = path.join(
-    outputDirectory,
-    videoFile.replace(/\.[^.]+$/, '')
-  );
-
-  const tasks: Promise<void>[] = [];
-
-  // Create H.264 version for desktop (MP4) - 16:9 aspect ratio
-  tasks.push(
-    encodeVideoWithProgress(
-      inputFilePath,
-      `${baseOutputFileName}-h264-desktop.mp4`,
-      h264OptionsDesktop
-    )
-  );
-
-  // Create H.264 version for mobile (MP4) - 4:3 aspect ratio
-  tasks.push(
-    encodeVideoWithProgress(
-      inputFilePath,
-      `${baseOutputFileName}-h264-mobile.mp4`,
-      h264OptionsMobile
-    )
-  );
-
-  // Create VP9 version (WebM) - 16:9 aspect ratio (same as desktop) with improved quality
-  tasks.push(
-    encodeVideoWithProgress(
-      inputFilePath,
-      `${baseOutputFileName}-vp9.webm`,
-      vp9Options
-    )
-  );
-
-  // Create MP4 version for mobile - 4:3 aspect ratio (same as h264 mobile)
-  tasks.push(
-    encodeVideoWithProgress(
-      inputFilePath,
-      `${baseOutputFileName}-mp4-mobile.mp4`,
-      h264OptionsMobile
-    )
-  );
-
-  try {
-    await Promise.all(tasks);
-    logMessage(`All versions created for ${videoFile}`, chalk.green);
-  } catch (error) {
-    logMessage(`Error creating versions for ${videoFile}: ${error}`, chalk.red);
-  }
-};
-
-/**
- * Process all video files in the input directory by encoding all versions for each file.
+ * Process all video files in the input directory by encoding H.264 and VP9 versions for each file.
  *
  * @returns A Promise that resolves when all videos are processed.
  */
@@ -212,7 +181,7 @@ const processAllVideos = async (): Promise<void> => {
     .filter((file) => VIDEO_EXTENSIONS.includes(path.extname(file)));
 
   const tasks: Promise<void>[] = videoFiles.map((videoFile) =>
-    encodeAllVersions(videoFile)
+    encodeVersions(videoFile)
   );
 
   try {
