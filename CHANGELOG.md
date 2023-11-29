@@ -1,5 +1,11 @@
 # midgar-video
 
+## 2.2.0
+
+### Minor Changes
+
+- c948315: added more meta data to package.json and set private to false
+
 ## 2.1.1
 
 ### Patch Changes
