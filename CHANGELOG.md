@@ -1,5 +1,11 @@
 # midgar-video
 
+## 4.0.2
+
+### Patch Changes
+
+- 758e5dc: updated output to remove encoder
+
 ## 4.0.1
 
 ### Patch Changes
