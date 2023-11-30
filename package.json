@@ -14,7 +14,7 @@
   "scripts": {
     "process-videos": "node src/index.js",
     "lint": "eslint -f unix \"src/**/*.{ts,tsx}\" && tsc",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "coverage": "jest --coverage",
     "update": "pnpm lint && pnpm changeset version && pnpm changeset",
     "ci": "pnpm run build && changeset publish",
