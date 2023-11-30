@@ -1,5 +1,11 @@
 # midgar-video
 
+## 4.0.1
+
+### Patch Changes
+
+- 9128bd2: adding back support for correct outputs
+
 ## 4.0.0
 
 ### Major Changes
