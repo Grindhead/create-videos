@@ -1,5 +1,11 @@
 # midgar-video
 
+## 5.0.0
+
+### Major Changes
+
+- 8932b16: input and output folder are now required
+
 ## 4.0.2
 
 ### Patch Changes
