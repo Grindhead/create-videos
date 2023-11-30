@@ -77,10 +77,10 @@ const processSingleVideo = async (videoFile, index, totalVideos) => {
     const h264OptionsMobile = [...h264Options, ...mobileOptions];
     const vp9OptionsMobile = [...vp9Options, ...mobileOptions];
     try {
-        await encodeVideoWithProgress(inputFilePath, `${baseOutputFileName}-h264-desktop.mp4`, h264OptionsDesktop, `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (H.264 - Desktop)`);
-        await encodeVideoWithProgress(inputFilePath, `${baseOutputFileName}-vp9-desktop.webm`, vp9OptionsDesktop, `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (VP9 - Desktop)`);
-        await encodeVideoWithProgress(inputFilePath, `${baseOutputFileName}-h264-mobile.mp4`, h264OptionsMobile, `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (H.264 - Mobile)`);
-        await encodeVideoWithProgress(inputFilePath, `${baseOutputFileName}-vp9-mobile.webm`, vp9OptionsMobile, `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (VP9 - Mobile)`);
+        await encodeVideoWithProgress(inputFilePath, `${baseOutputFileName}-desktop.mp4`, h264OptionsDesktop, `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (H.264 - Desktop)`);
+        await encodeVideoWithProgress(inputFilePath, `${baseOutputFileName}-desktop.webm`, vp9OptionsDesktop, `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (VP9 - Desktop)`);
+        await encodeVideoWithProgress(inputFilePath, `${baseOutputFileName}-mobile.mp4`, h264OptionsMobile, `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (H.264 - Mobile)`);
+        await encodeVideoWithProgress(inputFilePath, `${baseOutputFileName}-mobile.webm`, vp9OptionsMobile, `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (VP9 - Mobile)`);
         logMessage(`Versions created for ${videoFile}`, chalk_1.default.green);
     }
     catch (error) {

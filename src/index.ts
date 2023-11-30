@@ -129,7 +129,7 @@ const processSingleVideo = async (
     // Create H.264 version (MP4) - 16:9 aspect ratio for desktop
     await encodeVideoWithProgress(
       inputFilePath,
-      `${baseOutputFileName}-h264-desktop.mp4`,
+      `${baseOutputFileName}-desktop.mp4`,
       h264OptionsDesktop,
       `Processing video ${
         index + 1
@@ -139,7 +139,7 @@ const processSingleVideo = async (
     // Create VP9 version (WebM) - 16:9 aspect ratio for desktop
     await encodeVideoWithProgress(
       inputFilePath,
-      `${baseOutputFileName}-vp9-desktop.webm`,
+      `${baseOutputFileName}-desktop.webm`,
       vp9OptionsDesktop,
       `Processing video ${
         index + 1
@@ -149,7 +149,7 @@ const processSingleVideo = async (
     // Create H.264 version (MP4) - 4:3 aspect ratio for mobile
     await encodeVideoWithProgress(
       inputFilePath,
-      `${baseOutputFileName}-h264-mobile.mp4`,
+      `${baseOutputFileName}-mobile.mp4`,
       h264OptionsMobile,
       `Processing video ${
         index + 1
@@ -159,7 +159,7 @@ const processSingleVideo = async (
     // Create VP9 version (WebM) - 4:3 aspect ratio for mobile
     await encodeVideoWithProgress(
       inputFilePath,
-      `${baseOutputFileName}-vp9-mobile.webm`,
+      `${baseOutputFileName}-mobile.webm`,
       vp9OptionsMobile,
       `Processing video ${
         index + 1
