@@ -1,5 +1,11 @@
 # midgar-video
 
+## 4.0.0
+
+### Major Changes
+
+- 5f9b8cd: version 3.0
+
 ## 3.0.0
 
 ### Major Changes
