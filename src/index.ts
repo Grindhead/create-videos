@@ -95,9 +95,15 @@ const createDir = (dir: string): void => {
  * Encode H.264 (MP4) and VP9 (WebM) versions of a given video file.
  *
  * @param videoFile - The name of the video file.
+ * @param index - The index of the video file in the list of all video files.
+ * @param totalVideos - The total number of videos to process.
  * @returns A Promise that resolves when both versions are encoded.
  */
-const encodeVersions = async (videoFile: string): Promise<void> => {
+const processSingleVideo = async (
+  videoFile: string,
+  index: number,
+  totalVideos: number
+): Promise<void> => {
   const inputFilePath = path.join(inputDirectory, videoFile);
   const baseOutputFileName = path.join(
     outputDirectory,
@@ -107,28 +113,23 @@ const encodeVersions = async (videoFile: string): Promise<void> => {
   const h264OptionsDesktop = [...h264Options];
   const vp9OptionsDesktop = [...vp9Options];
 
-  const tasks: Promise<void>[] = [];
-
-  // Create H.264 version (MP4) - 16:9 aspect ratio for both mobile and desktop
-  tasks.push(
-    encodeVideoWithProgress(
+  try {
+    // Create H.264 version (MP4) - 16:9 aspect ratio for both mobile and desktop
+    await encodeVideoWithProgress(
       inputFilePath,
       `${baseOutputFileName}-h264.mp4`,
-      h264OptionsDesktop
-    )
-  );
+      h264OptionsDesktop,
+      `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (H.264)`
+    );
 
-  // Create VP9 version (WebM) - 16:9 aspect ratio for both mobile and desktop
-  tasks.push(
-    encodeVideoWithProgress(
+    // Create VP9 version (WebM) - 16:9 aspect ratio for both mobile and desktop
+    await encodeVideoWithProgress(
       inputFilePath,
       `${baseOutputFileName}-vp9.webm`,
-      vp9OptionsDesktop
-    )
-  );
+      vp9OptionsDesktop,
+      `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (VP9)`
+    );
 
-  try {
-    await Promise.all(tasks);
     logMessage(`Versions created for ${videoFile}`, chalk.green);
   } catch (error) {
     logMessage(`Error creating versions for ${videoFile}: ${error}`, chalk.red);
@@ -141,12 +142,14 @@ const encodeVersions = async (videoFile: string): Promise<void> => {
  * @param inputFilePath - The path to the input video file.
  * @param outputFilePath - The path to the output video file.
  * @param options - Additional FFmpeg options.
+ * @param progressMessage - The progress message to display.
  * @returns A Promise that resolves when the encoding is complete.
  */
 const encodeVideoWithProgress = async (
   inputFilePath: string,
   outputFilePath: string,
-  options: string[]
+  options: string[],
+  progressMessage: string
 ): Promise<void> => {
   const command = [
     ffmpegPath.replace(/\\/g, '/'),
@@ -155,6 +158,8 @@ const encodeVideoWithProgress = async (
     ...options,
     outputFilePath.replace(/\\/g, '/')
   ].join(' ');
+
+  console.log(progressMessage); // Display progress message
 
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
@@ -180,16 +185,14 @@ const processAllVideos = async (): Promise<void> => {
     .readdirSync(inputDirectory)
     .filter((file) => VIDEO_EXTENSIONS.includes(path.extname(file)));
 
-  const tasks: Promise<void>[] = videoFiles.map((videoFile) =>
-    encodeVersions(videoFile)
-  );
+  const totalVideos = videoFiles.length;
 
-  try {
-    await Promise.all(tasks);
-    logMessage('All videos processed successfully!', chalk.green);
-  } catch (error) {
-    logMessage(`Error processing videos: ${error}`, chalk.red);
+  for (let i = 0; i < totalVideos; i++) {
+    const videoFile = videoFiles[i] as string;
+    await processSingleVideo(videoFile, i, totalVideos);
   }
+
+  logMessage('All videos processed successfully!', chalk.green);
 };
 
 /**
