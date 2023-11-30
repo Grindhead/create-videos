@@ -31,8 +31,8 @@ const path = __importStar(require("path"));
 const chalk_1 = __importDefault(require("chalk"));
 const rimraf = __importStar(require("rimraf"));
 const child_process_1 = require("child_process");
-const inputDirectory = './src/Resources/Videos';
-const outputDirectory = './dist/videos';
+let inputDirectory;
+let outputDirectory;
 const ffmpegPath = 'ffmpeg';
 const VIDEO_EXTENSIONS = ['.mp4', '.mov'];
 const h264Options = [
@@ -45,6 +45,34 @@ const h264Options = [
     '-vf',
     'scale=1920:1080'
 ];
+const logMessage = (message, color) => {
+    console.log(color(message));
+};
+const createDir = (dir) => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+};
+const run = () => {
+    if (!inputDirectory || !outputDirectory) {
+        throw new Error('Input and output directories must be provided.');
+    }
+    rimraf.sync(outputDirectory);
+    createDir('./dist');
+    createDir('./dist/videos');
+    processAllVideos();
+};
+process.argv.forEach((arg, index, array) => {
+    if (arg === '--inputDirectory' && array[index + 1]) {
+        inputDirectory = array[index + 1];
+    }
+    else if (arg === '--outputDirectory' && array[index + 1]) {
+        outputDirectory = array[index + 1];
+    }
+});
+if (!inputDirectory || !outputDirectory) {
+    throw new Error('Input and output directories must be provided.');
+}
 const vp9Options = [
     '-c:v',
     'libvpx-vp9',
@@ -61,14 +89,6 @@ const mobileOptions = [
     '-vf',
     'scale=640:480'
 ];
-const logMessage = (message, color) => {
-    console.log(color(message));
-};
-const createDir = (dir) => {
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-    }
-};
 const processSingleVideo = async (videoFile, index, totalVideos) => {
     const inputFilePath = path.join(inputDirectory, videoFile);
     const baseOutputFileName = path.join(outputDirectory, videoFile.replace(/\.[^.]+$/, ''));
@@ -120,12 +140,6 @@ const processAllVideos = async () => {
         await processSingleVideo(videoFile, i, totalVideos);
     }
     logMessage('All videos processed successfully!', chalk_1.default.green);
-};
-const run = () => {
-    rimraf.sync(outputDirectory);
-    createDir('./dist');
-    createDir('./dist/videos');
-    processAllVideos();
 };
 run();
 //# sourceMappingURL=index.js.map

@@ -6,19 +6,13 @@ import { exec } from 'child_process';
 
 /**
  * The directory containing input video files.
- *
- * @remarks
- * Default value: './src/Resources/Videos'.
  */
-const inputDirectory = './src/Resources/Videos';
+let inputDirectory: string | undefined;
 
 /**
  * The directory where processed videos will be saved.
- *
- * @remarks
- * Default value: './dist/videos'.
  */
-const outputDirectory = './dist/videos';
+let outputDirectory: string | undefined;
 
 /**
  * Path to the FFmpeg executable.
@@ -54,6 +48,63 @@ const h264Options: string[] = [
 ];
 
 /**
+ * Log a message with a specified color using chalk.
+ *
+ * @param message - The message to be logged.
+ * @param color - The chalk color function to be applied to the message.
+ */
+const logMessage = (message: string, color: ChalkInstance): void => {
+  console.log(color(message));
+};
+
+/**
+ * Create a directory at a given path if it does not exist.
+ *
+ * @param dir - The path of the directory to be created.
+ */
+const createDir = (dir: string): void => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+};
+
+/**
+ * Run the video processing script.
+ *
+ * @remarks
+ * This function is the entry point of the script.
+ */
+const run = (): void => {
+  // Ensure inputDirectory and outputDirectory are set
+  if (!inputDirectory || !outputDirectory) {
+    throw new Error('Input and output directories must be provided.');
+  }
+
+  rimraf.sync(outputDirectory);
+
+  createDir('./dist');
+  createDir('./dist/videos');
+
+  processAllVideos();
+};
+
+/**
+ * Parse command-line options.
+ */
+process.argv.forEach((arg, index, array) => {
+  if (arg === '--inputDirectory' && array[index + 1]) {
+    inputDirectory = array[index + 1];
+  } else if (arg === '--outputDirectory' && array[index + 1]) {
+    outputDirectory = array[index + 1];
+  }
+});
+
+// Ensure inputDirectory and outputDirectory are set before running the script
+if (!inputDirectory || !outputDirectory) {
+  throw new Error('Input and output directories must be provided.');
+}
+
+/**
  * FFmpeg options for VP9 codec (WebM format).
  *
  * @remarks
@@ -81,27 +132,6 @@ const mobileOptions: string[] = [
 ];
 
 /**
- * Log a message with a specified color using chalk.
- *
- * @param message - The message to be logged.
- * @param color - The chalk color function to be applied to the message.
- */
-const logMessage = (message: string, color: ChalkInstance): void => {
-  console.log(color(message));
-};
-
-/**
- * Create a directory at a given path if it does not exist.
- *
- * @param dir - The path of the directory to be created.
- */
-const createDir = (dir: string): void => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-  }
-};
-
-/**
  * Encode H.264 (MP4) and VP9 (WebM) versions of a given video file.
  *
  * @param videoFile - The name of the video file.
@@ -114,9 +144,9 @@ const processSingleVideo = async (
   index: number,
   totalVideos: number
 ): Promise<void> => {
-  const inputFilePath = path.join(inputDirectory, videoFile);
+  const inputFilePath = path.join(inputDirectory as string, videoFile);
   const baseOutputFileName = path.join(
-    outputDirectory,
+    outputDirectory as string,
     videoFile.replace(/\.[^.]+$/, '')
   );
 
@@ -218,7 +248,7 @@ const encodeVideoWithProgress = async (
  */
 const processAllVideos = async (): Promise<void> => {
   const videoFiles = fs
-    .readdirSync(inputDirectory)
+    .readdirSync(inputDirectory as string)
     .filter((file) => VIDEO_EXTENSIONS.includes(path.extname(file)));
 
   const totalVideos = videoFiles.length;
@@ -229,18 +259,6 @@ const processAllVideos = async (): Promise<void> => {
   }
 
   logMessage('All videos processed successfully!', chalk.green);
-};
-
-/**
- * Run the video processing script.
- */
-const run = (): void => {
-  rimraf.sync(outputDirectory);
-
-  createDir('./dist');
-  createDir('./dist/videos');
-
-  processAllVideos();
 };
 
 run();
