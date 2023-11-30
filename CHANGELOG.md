@@ -1,5 +1,11 @@
 # midgar-video
 
+## 6.0.1
+
+### Patch Changes
+
+- 41e107c: fixing output
+
 ## 6.0.0
 
 ### Major Changes
