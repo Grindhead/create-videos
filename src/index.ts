@@ -48,7 +48,9 @@ const h264Options: string[] = [
   '-c:a',
   'aac',
   '-b:a',
-  '192k'
+  '192k',
+  '-vf',
+  'scale=1920:1080' // 16:9 aspect ratio
 ];
 
 /**
@@ -67,7 +69,15 @@ const vp9Options: string[] = [
   '-b:a',
   '192k',
   '-vf',
-  'scale=1920:1080'
+  'scale=1920:1080' // 16:9 aspect ratio
+];
+
+/**
+ * FFmpeg options for mobile version with 4:3 aspect ratio.
+ */
+const mobileOptions: string[] = [
+  '-vf',
+  'scale=640:480' // 4:3 aspect ratio for mobile
 ];
 
 /**
@@ -112,22 +122,48 @@ const processSingleVideo = async (
 
   const h264OptionsDesktop = [...h264Options];
   const vp9OptionsDesktop = [...vp9Options];
+  const h264OptionsMobile = [...h264Options, ...mobileOptions];
+  const vp9OptionsMobile = [...vp9Options, ...mobileOptions];
 
   try {
-    // Create H.264 version (MP4) - 16:9 aspect ratio for both mobile and desktop
+    // Create H.264 version (MP4) - 16:9 aspect ratio for desktop
     await encodeVideoWithProgress(
       inputFilePath,
-      `${baseOutputFileName}-h264.mp4`,
+      `${baseOutputFileName}-h264-desktop.mp4`,
       h264OptionsDesktop,
-      `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (H.264)`
+      `Processing video ${
+        index + 1
+      } of ${totalVideos}: ${videoFile} (H.264 - Desktop)`
     );
 
-    // Create VP9 version (WebM) - 16:9 aspect ratio for both mobile and desktop
+    // Create VP9 version (WebM) - 16:9 aspect ratio for desktop
     await encodeVideoWithProgress(
       inputFilePath,
-      `${baseOutputFileName}-vp9.webm`,
+      `${baseOutputFileName}-vp9-desktop.webm`,
       vp9OptionsDesktop,
-      `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (VP9)`
+      `Processing video ${
+        index + 1
+      } of ${totalVideos}: ${videoFile} (VP9 - Desktop)`
+    );
+
+    // Create H.264 version (MP4) - 4:3 aspect ratio for mobile
+    await encodeVideoWithProgress(
+      inputFilePath,
+      `${baseOutputFileName}-h264-mobile.mp4`,
+      h264OptionsMobile,
+      `Processing video ${
+        index + 1
+      } of ${totalVideos}: ${videoFile} (H.264 - Mobile)`
+    );
+
+    // Create VP9 version (WebM) - 4:3 aspect ratio for mobile
+    await encodeVideoWithProgress(
+      inputFilePath,
+      `${baseOutputFileName}-vp9-mobile.webm`,
+      vp9OptionsMobile,
+      `Processing video ${
+        index + 1
+      } of ${totalVideos}: ${videoFile} (VP9 - Mobile)`
     );
 
     logMessage(`Versions created for ${videoFile}`, chalk.green);
