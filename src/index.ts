@@ -161,7 +161,7 @@ const processSingleVideo = async (
       inputFilePath,
       `${baseOutputFileName}-desktop.mp4`,
       h264OptionsDesktop,
-      `Processing video ${
+      `${baseOutputFileName} ${
         index + 1
       } of ${totalVideos}: ${videoFile} (H.264 - Desktop)`
     );
@@ -171,7 +171,7 @@ const processSingleVideo = async (
       inputFilePath,
       `${baseOutputFileName}-desktop.webm`,
       vp9OptionsDesktop,
-      `Processing video ${
+      `${baseOutputFileName} ${
         index + 1
       } of ${totalVideos}: ${videoFile} (VP9 - Desktop)`
     );
@@ -181,7 +181,7 @@ const processSingleVideo = async (
       inputFilePath,
       `${baseOutputFileName}-mobile.mp4`,
       h264OptionsMobile,
-      `Processing video ${
+      `${baseOutputFileName} ${
         index + 1
       } of ${totalVideos}: ${videoFile} (H.264 - Mobile)`
     );
@@ -191,7 +191,7 @@ const processSingleVideo = async (
       inputFilePath,
       `${baseOutputFileName}-mobile.webm`,
       vp9OptionsMobile,
-      `Processing video ${
+      `${baseOutputFileName} ${
         index + 1
       } of ${totalVideos}: ${videoFile} (VP9 - Mobile)`
     );
