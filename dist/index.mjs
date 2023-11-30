@@ -7723,8 +7723,6 @@ var h264Options = [
   "-b:a",
   "192k"
 ];
-var h264OptionsDesktop = [...h264Options];
-var h264OptionsMobile = [...h264Options, "-vf", "scale=1920:1440"];
 var vp9Options = [
   "-c:v",
   "libvpx-vp9",
@@ -7745,7 +7743,33 @@ var createDir = (dir) => {
     fs2.mkdirSync(dir);
   }
 };
-var encodeVideoWithProgress = async (inputFilePath, outputFilePath, options) => {
+var processSingleVideo = async (videoFile, index, totalVideos) => {
+  const inputFilePath = path2.join(inputDirectory, videoFile);
+  const baseOutputFileName = path2.join(
+    outputDirectory,
+    videoFile.replace(/\.[^.]+$/, "")
+  );
+  const h264OptionsDesktop = [...h264Options];
+  const vp9OptionsDesktop = [...vp9Options];
+  try {
+    await encodeVideoWithProgress(
+      inputFilePath,
+      `${baseOutputFileName}-h264.mp4`,
+      h264OptionsDesktop,
+      `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (H.264)`
+    );
+    await encodeVideoWithProgress(
+      inputFilePath,
+      `${baseOutputFileName}-vp9.webm`,
+      vp9OptionsDesktop,
+      `Processing video ${index + 1} of ${totalVideos}: ${videoFile} (VP9)`
+    );
+    logMessage(`Versions created for ${videoFile}`, source_default.green);
+  } catch (error) {
+    logMessage(`Error creating versions for ${videoFile}: ${error}`, source_default.red);
+  }
+};
+var encodeVideoWithProgress = async (inputFilePath, outputFilePath, options, progressMessage) => {
   const command = [
     ffmpegPath.replace(/\\/g, "/"),
     "-i",
@@ -7753,6 +7777,7 @@ var encodeVideoWithProgress = async (inputFilePath, outputFilePath, options) => 
     ...options,
     outputFilePath.replace(/\\/g, "/")
   ].join(" ");
+  console.log(progressMessage);
   return new Promise((resolve6, reject) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -7766,59 +7791,14 @@ var encodeVideoWithProgress = async (inputFilePath, outputFilePath, options) => 
     });
   });
 };
-var encodeAllVersions = async (videoFile) => {
-  const inputFilePath = path2.join(inputDirectory, videoFile);
-  const baseOutputFileName = path2.join(
-    outputDirectory,
-    videoFile.replace(/\.[^.]+$/, "")
-  );
-  const tasks = [];
-  tasks.push(
-    encodeVideoWithProgress(
-      inputFilePath,
-      `${baseOutputFileName}-h264-desktop.mp4`,
-      h264OptionsDesktop
-    )
-  );
-  tasks.push(
-    encodeVideoWithProgress(
-      inputFilePath,
-      `${baseOutputFileName}-h264-mobile.mp4`,
-      h264OptionsMobile
-    )
-  );
-  tasks.push(
-    encodeVideoWithProgress(
-      inputFilePath,
-      `${baseOutputFileName}-vp9.webm`,
-      vp9Options
-    )
-  );
-  tasks.push(
-    encodeVideoWithProgress(
-      inputFilePath,
-      `${baseOutputFileName}-mp4-mobile.mp4`,
-      h264OptionsMobile
-    )
-  );
-  try {
-    await Promise.all(tasks);
-    logMessage(`All versions created for ${videoFile}`, source_default.green);
-  } catch (error) {
-    logMessage(`Error creating versions for ${videoFile}: ${error}`, source_default.red);
-  }
-};
 var processAllVideos = async () => {
   const videoFiles = fs2.readdirSync(inputDirectory).filter((file) => VIDEO_EXTENSIONS.includes(path2.extname(file)));
-  const tasks = videoFiles.map(
-    (videoFile) => encodeAllVersions(videoFile)
-  );
-  try {
-    await Promise.all(tasks);
-    logMessage("All videos processed successfully!", source_default.green);
-  } catch (error) {
-    logMessage(`Error processing videos: ${error}`, source_default.red);
+  const totalVideos = videoFiles.length;
+  for (let i = 0; i < totalVideos; i++) {
+    const videoFile = videoFiles[i];
+    await processSingleVideo(videoFile, i, totalVideos);
   }
+  logMessage("All videos processed successfully!", source_default.green);
 };
 var run = () => {
   sync2(outputDirectory);
