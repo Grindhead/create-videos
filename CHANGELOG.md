@@ -1,5 +1,11 @@
 # midgar-video
 
+## 6.0.0
+
+### Major Changes
+
+- 6882819: updated changeset
+
 ## 5.0.0
 
 ### Major Changes
