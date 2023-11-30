@@ -1,5 +1,11 @@
 # midgar-video
 
+## 6.0.3
+
+### Patch Changes
+
+- abc86ac: added --passWithNoTests to jest
+
 ## 6.0.2
 
 ### Patch Changes
