@@ -1,5 +1,11 @@
 # midgar-video
 
+## 3.0.0
+
+### Major Changes
+
+- 6cec5ab: optimised to reduce memory usage
+
 ## 2.1.4
 
 ### Patch Changes
