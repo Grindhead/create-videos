@@ -1,5 +1,11 @@
 # midgar-video
 
+## 6.0.2
+
+### Patch Changes
+
+- 38ac651: moved all jest config inside of jest.config.js
+
 ## 6.0.1
 
 ### Patch Changes
