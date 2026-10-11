@@ -4,7 +4,7 @@ This script automates the video encoding process using FFmpeg to create multiple
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) (version X.X.X or higher)
+- [Node.js](https://nodejs.org/) (version 21.2 or higher)
 - [FFmpeg](https://www.ffmpeg.org/) installed and available in the system's PATH.
 
 ## Installation
@@ -42,3 +42,20 @@ Runs ESLint over the codebase.
 pnpm ci:
 Publishes the package to NPM. This task is called by GitHub and should not be invoked directly.
 ```
+
+## Process videos
+
+Build the checked-out source, then pass separate input and output directories:
+
+```bash
+pnpm install
+pnpm build
+pnpm process-videos --inputDirectory "./source videos" --outputDirectory "./encoded/videos"
+```
+
+The installed package exposes `process-videos`; run `process-videos --help` for usage.
+FFmpeg must be available on PATH. Custom output directories are created recursively.
+Existing files are preserved: an existing generated filename fails that conversion.
+Choose a fresh output directory to encode another batch. Input and output directories
+must not be equal or contain one another, including through symlinks. Failed batches
+return a nonzero exit status and retain successfully encoded outputs.
