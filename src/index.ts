@@ -223,6 +223,9 @@ const encodeVideoWithProgress = async (
   options: string[],
   progressMessage: string
 ): Promise<void> => {
+  if (fs.lstatSync(outputFilePath, { throwIfNoEntry: false })) {
+    throw new Error(`Output already exists: ${outputFilePath}. Choose a new output directory.`);
+  }
   console.log(progressMessage);
   return new Promise((resolve, reject) => {
     const child = spawn(ffmpegPath, ['-nostdin', '-n', '-i', inputFilePath, ...options, outputFilePath], {
@@ -231,8 +234,16 @@ const encodeVideoWithProgress = async (
     });
     child.once('error', (error) => reject(new Error(`Unable to start FFmpeg: ${error.message}`)));
     child.once('close', (code, signal) => {
-      if (code === 0) resolve();
-      else reject(new Error(`FFmpeg failed (${signal ?? `exit ${code}`}) for ${inputFilePath}`));
+      if (code !== 0) {
+        reject(new Error(`FFmpeg failed (${signal ?? `exit ${code}`}) for ${inputFilePath}`));
+        return;
+      }
+      void fs.promises.stat(outputFilePath).then((output) => {
+        if (output.isFile() && output.size > 0) resolve();
+        else reject(new Error(`FFmpeg did not create a nonempty output: ${outputFilePath}`));
+      }, (error: unknown) => {
+        reject(new Error(`FFmpeg did not create a nonempty output: ${outputFilePath}. ${String(error)}`));
+      });
     });
   });
 };

@@ -17,10 +17,11 @@ const fs = require('node:fs');
 const args = process.argv.slice(2);
 fs.appendFileSync(process.env.FFMPEG_LOG, JSON.stringify(args)+'\\n');
 if (process.env.FFMPEG_FAIL) process.exit(3);
+if (process.env.FFMPEG_SKIP_WRITE) process.exit(0);
 process.stderr.write('x'.repeat(1100000));
 const output = args.at(-1);
 if (fs.existsSync(output)) process.exit(1);
-fs.writeFileSync(output, 'encoded');
+fs.writeFileSync(output, process.env.FFMPEG_EMPTY ? '' : 'encoded');
 `, {mode: 0o755});
   const env = {...process.env, PATH: `${bin}:${process.env.PATH}`, FFMPEG_LOG: join(root, 'calls.jsonl')};
   const run = (extra = {}) => spawnSync(process.execPath, [cli, '--inputDirectory', input, '--outputDirectory', output], {encoding:'utf8', maxBuffer: 16 * 1024 * 1024, env: {...env,...extra}});
@@ -50,6 +51,30 @@ test('literal filenames, nested output, streamed progress and unrelated files', 
 });
 test('failed conversion reports failure and returns a nonzero status',()=>{
   const f=fixture(); try {writeFileSync(join(f.input,'test.mp4'),'source');const r=f.run({FFMPEG_FAIL:'yes'});assert.equal(r.status,1);assert.match(r.stderr,/exit 3/);assert.doesNotMatch(r.stdout,/All videos processed successfully/);} finally {f.cleanup();}
+});
+test('existing generated paths fail before starting FFmpeg, including dangling symlinks',()=>{
+  const f=fixture();try {
+    writeFileSync(join(f.input,'test.mp4'),'source');
+    mkdirSync(f.output,{recursive:true});
+    const generated=join(f.output,'test-desktop.mp4');
+    for(const isSymlink of [false,true]) {
+      if(isSymlink) symlinkSync(join(f.root,'missing-target'),generated);
+      else writeFileSync(generated,'preserved');
+      const r=f.run();assert.equal(r.status,1);assert.match(r.stderr,/Output already exists/);
+      assert.match(r.stderr,/1 of 1 videos failed/);assert.equal(existsSync(f.env.FFMPEG_LOG),false);
+      if(!isSymlink) assert.equal(readFileSync(generated,'utf8'),'preserved');
+      rmSync(generated);
+    }
+  } finally {f.cleanup();}
+});
+test('zero FFmpeg exit without a completed output fails the batch',()=>{
+  for(const env of [{FFMPEG_SKIP_WRITE:'yes'},{FFMPEG_EMPTY:'yes'}]) {
+    const f=fixture();try {
+      writeFileSync(join(f.input,'test.mp4'),'source');
+      const r=f.run(env);assert.equal(r.status,1);assert.match(r.stderr,/FFmpeg did not create a nonempty output/);
+      assert.match(r.stderr,/1 of 1 videos failed/);assert.doesNotMatch(r.stdout,/All videos processed successfully/);
+    } finally {f.cleanup();}
+  }
 });
 test('rejects equal, nested and symlink-aliased input/output before conversion',()=>{
   const f=fixture();try {

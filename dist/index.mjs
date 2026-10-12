@@ -34,7 +34,8 @@ var run = async () => {
   const input = fs.realpathSync(inputDirectory);
   const requestedOutput = path.resolve(outputDirectory);
   let ancestor = requestedOutput;
-  while (!fs.existsSync(ancestor)) ancestor = path.dirname(ancestor);
+  while (!fs.existsSync(ancestor))
+    ancestor = path.dirname(ancestor);
   const output = path.resolve(fs.realpathSync(ancestor), path.relative(ancestor, requestedOutput));
   const contains = (parent, child) => {
     const relative2 = path.relative(parent, child);
@@ -43,7 +44,8 @@ var run = async () => {
   if (contains(input, output) || contains(output, input)) {
     throw new Error("Input and output directories must be separate and must not contain one another.");
   }
-  if (!fs.statSync(input).isDirectory()) throw new Error("Input must be a directory.");
+  if (!fs.statSync(input).isDirectory())
+    throw new Error("Input must be a directory.");
   inputDirectory = input;
   outputDirectory = output;
   createDir(output);
@@ -115,6 +117,9 @@ var processSingleVideo = async (videoFile, index, totalVideos) => {
   }
 };
 var encodeVideoWithProgress = async (inputFilePath, outputFilePath, options, progressMessage) => {
+  if (fs.lstatSync(outputFilePath, { throwIfNoEntry: false })) {
+    throw new Error(`Output already exists: ${outputFilePath}. Choose a new output directory.`);
+  }
   console.log(progressMessage);
   return new Promise((resolve2, reject) => {
     const child = spawn(ffmpegPath, ["-nostdin", "-n", "-i", inputFilePath, ...options, outputFilePath], {
@@ -123,15 +128,26 @@ var encodeVideoWithProgress = async (inputFilePath, outputFilePath, options, pro
     });
     child.once("error", (error) => reject(new Error(`Unable to start FFmpeg: ${error.message}`)));
     child.once("close", (code, signal) => {
-      if (code === 0) resolve2();
-      else reject(new Error(`FFmpeg failed (${signal ?? `exit ${code}`}) for ${inputFilePath}`));
+      if (code !== 0) {
+        reject(new Error(`FFmpeg failed (${signal ?? `exit ${code}`}) for ${inputFilePath}`));
+        return;
+      }
+      void fs.promises.stat(outputFilePath).then((output) => {
+        if (output.isFile() && output.size > 0)
+          resolve2();
+        else
+          reject(new Error(`FFmpeg did not create a nonempty output: ${outputFilePath}`));
+      }, (error) => {
+        reject(new Error(`FFmpeg did not create a nonempty output: ${outputFilePath}. ${String(error)}`));
+      });
     });
   });
 };
 var processAllVideos = async () => {
   const videoFiles = fs.readdirSync(inputDirectory).filter((file) => VIDEO_EXTENSIONS.includes(path.extname(file).toLowerCase()) && fs.statSync(path.join(inputDirectory, file)).isFile());
   const totalVideos = videoFiles.length;
-  if (!totalVideos) throw new Error("No MP4 or MOV input videos found.");
+  if (!totalVideos)
+    throw new Error("No MP4 or MOV input videos found.");
   const failures = [];
   for (let i = 0; i < totalVideos; i++) {
     const videoFile = videoFiles[i];
@@ -142,7 +158,8 @@ var processAllVideos = async () => {
       console.error(String(error));
     }
   }
-  if (failures.length) throw new Error(`${failures.length} of ${totalVideos} videos failed; completed outputs have been preserved.`);
+  if (failures.length)
+    throw new Error(`${failures.length} of ${totalVideos} videos failed; completed outputs have been preserved.`);
   logMessage("All videos processed successfully!");
 };
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
