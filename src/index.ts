@@ -1,8 +1,7 @@
+#!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
-import chalk, { ChalkInstance } from 'chalk';
-import * as rimraf from 'rimraf';
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 
 /**
  * The directory containing input video files.
@@ -53,8 +52,8 @@ const h264Options: string[] = [
  * @param message - The message to be logged.
  * @param color - The chalk color function to be applied to the message.
  */
-const logMessage = (message: string, color: ChalkInstance): void => {
-  console.log(color(message));
+const logMessage = (message: string): void => {
+  console.log(message);
 };
 
 /**
@@ -64,7 +63,7 @@ const logMessage = (message: string, color: ChalkInstance): void => {
  */
 const createDir = (dir: string): void => {
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   }
 };
 
@@ -74,18 +73,30 @@ const createDir = (dir: string): void => {
  * @remarks
  * This function is the entry point of the script.
  */
-const run = (): void => {
+const run = async (): Promise<void> => {
   // Ensure inputDirectory and outputDirectory are set
   if (!inputDirectory || !outputDirectory) {
     throw new Error('Input and output directories must be provided.');
   }
 
-  rimraf.sync(outputDirectory);
-
-  createDir('./dist');
-  createDir('./dist/videos');
-
-  processAllVideos();
+  const input = fs.realpathSync(inputDirectory);
+  const requestedOutput = path.resolve(outputDirectory);
+  // Resolve existing ancestors so a symlink cannot conceal overlapping paths.
+  let ancestor = requestedOutput;
+  while (!fs.existsSync(ancestor)) ancestor = path.dirname(ancestor);
+  const output = path.resolve(fs.realpathSync(ancestor), path.relative(ancestor, requestedOutput));
+  const contains = (parent: string, child: string): boolean => {
+    const relative = path.relative(parent, child);
+    return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
+  };
+  if (contains(input, output) || contains(output, input)) {
+    throw new Error('Input and output directories must be separate and must not contain one another.');
+  }
+  if (!fs.statSync(input).isDirectory()) throw new Error('Input must be a directory.');
+  inputDirectory = input;
+  outputDirectory = output;
+  createDir(output);
+  await processAllVideos();
 };
 
 /**
@@ -98,11 +109,6 @@ process.argv.forEach((arg, index, array) => {
     outputDirectory = array[index + 1];
   }
 });
-
-// Ensure inputDirectory and outputDirectory are set before running the script
-if (!inputDirectory || !outputDirectory) {
-  throw new Error('Input and output directories must be provided.');
-}
 
 /**
  * FFmpeg options for VP9 codec (WebM format).
@@ -196,9 +202,9 @@ const processSingleVideo = async (
       } of ${totalVideos}: ${videoFile} (VP9 - Mobile)`
     );
 
-    logMessage(`Versions created for ${videoFile}`, chalk.green);
+    logMessage(`Versions created for ${videoFile}`);
   } catch (error) {
-    logMessage(`Error creating versions for ${videoFile}: ${error}`, chalk.red);
+    throw new Error(`Error creating versions for ${videoFile}: ${String(error)}`);
   }
 };
 
@@ -217,26 +223,27 @@ const encodeVideoWithProgress = async (
   options: string[],
   progressMessage: string
 ): Promise<void> => {
-  const command = [
-    ffmpegPath.replace(/\\/g, '/'),
-    '-i',
-    inputFilePath.replace(/\\/g, '/'),
-    ...options,
-    outputFilePath.replace(/\\/g, '/')
-  ].join(' ');
-
-  console.log(progressMessage); // Display progress message
-
+  if (fs.lstatSync(outputFilePath, { throwIfNoEntry: false })) {
+    throw new Error(`Output already exists: ${outputFilePath}. Choose a new output directory.`);
+  }
+  console.log(progressMessage);
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`FFmpeg Error: ${error.message}`);
-        console.error(`FFmpeg Output: ${stderr}`);
-        reject(error.message);
-      } else {
-        console.log(`FFmpeg Output: ${stdout}`);
-        resolve();
+    const child = spawn(ffmpegPath, ['-nostdin', '-n', '-i', inputFilePath, ...options, outputFilePath], {
+      shell: false,
+      stdio: ['ignore', 'inherit', 'inherit']
+    });
+    child.once('error', (error) => reject(new Error(`Unable to start FFmpeg: ${error.message}`)));
+    child.once('close', (code, signal) => {
+      if (code !== 0) {
+        reject(new Error(`FFmpeg failed (${signal ?? `exit ${code}`}) for ${inputFilePath}`));
+        return;
       }
+      void fs.promises.stat(outputFilePath).then((output) => {
+        if (output.isFile() && output.size > 0) resolve();
+        else reject(new Error(`FFmpeg did not create a nonempty output: ${outputFilePath}`));
+      }, (error: unknown) => {
+        reject(new Error(`FFmpeg did not create a nonempty output: ${outputFilePath}. ${String(error)}`));
+      });
     });
   });
 };
@@ -249,16 +256,31 @@ const encodeVideoWithProgress = async (
 const processAllVideos = async (): Promise<void> => {
   const videoFiles = fs
     .readdirSync(inputDirectory as string)
-    .filter((file) => VIDEO_EXTENSIONS.includes(path.extname(file)));
+    .filter((file) => VIDEO_EXTENSIONS.includes(path.extname(file).toLowerCase()) && fs.statSync(path.join(inputDirectory as string, file)).isFile());
 
   const totalVideos = videoFiles.length;
 
+  if (!totalVideos) throw new Error('No MP4 or MOV input videos found.');
+  const failures: string[] = [];
   for (let i = 0; i < totalVideos; i++) {
     const videoFile = videoFiles[i] as string;
-    await processSingleVideo(videoFile, i, totalVideos);
+    try {
+      await processSingleVideo(videoFile, i, totalVideos);
+    } catch (error) {
+      failures.push(String(error));
+      console.error(String(error));
+    }
   }
 
-  logMessage('All videos processed successfully!', chalk.green);
+  if (failures.length) throw new Error(`${failures.length} of ${totalVideos} videos failed; completed outputs have been preserved.`);
+  logMessage('All videos processed successfully!');
 };
 
-run();
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log('Usage: process-videos --inputDirectory <directory> --outputDirectory <directory>\nRequires FFmpeg on PATH. Existing output files are preserved; choose a new output directory for another run.');
+} else {
+  void run().catch((error: unknown) => {
+    console.error(String(error));
+    process.exitCode = 1;
+  });
+}
