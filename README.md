@@ -50,7 +50,7 @@ Build the checked-out source, then pass separate input and output directories:
 ```bash
 pnpm install
 pnpm build
-pnpm process-videos --inputDirectory "./source videos" --outputDirectory "./encoded/videos"
+node dist/index.js --inputDirectory "./source videos" --outputDirectory "./encoded/videos"
 ```
 
 The installed package exposes `process-videos`; run `process-videos --help` for usage.
