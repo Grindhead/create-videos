@@ -7,6 +7,30 @@ This script automates the video encoding process using FFmpeg to create multiple
 - [Node.js](https://nodejs.org/) (version X.X.X or higher)
 - [FFmpeg](https://www.ffmpeg.org/) installed and available in the system's PATH.
 
+## Usage
+
+```bash
+npx create-videos --inputDirectory ./videos --outputDirectory ./dist/videos
+```
+
+From a clone of this repository, build first and then run the script:
+
+```bash
+pnpm install
+pnpm run build
+pnpm run process-videos --inputDirectory ./videos --outputDirectory ./dist/videos
+```
+
+Options:
+
+- `--inputDirectory <dir>` (required): directory containing the `.mp4`/`.mov` source videos.
+- `--outputDirectory <dir>` (required): where the encoded videos are written. It is created (including parent directories) if missing. It must not be the input directory or contain it.
+- `--clean`: delete everything inside the output directory before encoding. Without it, existing files are kept and only the generated outputs are overwritten.
+- `--ffmpegPath <path>`: FFmpeg executable to use (default: `ffmpeg` on PATH).
+- `--help`: print usage.
+
+The process exits with code 0 only when every output was created. If any encode fails, it prints a summary of the failed outputs and exits with code 1.
+
 ## Installation
 
 ```bash
